@@ -1,0 +1,1 @@
+require 'authorize_net_reporting'
