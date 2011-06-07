@@ -46,10 +46,16 @@ describe AuthorizeNetReporting do
         lambda { subject.settled_batch_list }.should raise_error(StandardError)
       end
     end
-    
-    it "should return batches settled in the last 24 hours" do
-     pending "TODO"
-     subject.settled_batch_list
+    context "when there are settled batches" do
+      it "should return batches settled in the last 24 hours" do
+       pending "TODO"
+       subject.settled_batch_list
+      end
+      it "should return batches" do
+        batches = subject.settled_batch_list({:first_settlement_date => "2011/05/20", :last_settlement_date => "2011/05/20"})
+        raise batches.inspect      
+      end
+
     end
   end
   

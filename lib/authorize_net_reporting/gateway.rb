@@ -1,5 +1,6 @@
 require 'builder'
 require 'httparty'
+require 'date'
 class Gateway
   include HTTParty
   include Common
@@ -49,11 +50,10 @@ class Gateway
   def build_get_settled_batch_list_request(xml, options)
     xml.tag!("includeStatistics", true) if options[:include_statistics]
     if options[:first_settlement_date] and options[:last_settlement_date]
-      xml.tag!("firstSettlementDate", options[:first_settlement_date])
-      xml.tag!("lastSettlementDate", options[:last_settlement_date])
+      xml.tag!("firstSettlementDate", Date.parse(options[:first_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
+      xml.tag!("lastSettlementDate", Date.parse(options[:last_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
     end  
     xml.target!
-    
   end
   
 end
