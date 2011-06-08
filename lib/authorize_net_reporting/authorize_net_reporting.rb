@@ -10,7 +10,7 @@ class AuthorizeNetReporting < Gateway
     response = send_xml(xml)
     response_message = get_response_message(response, 'getTransactionDetailsResponse')
     if success?
-      parsed_response = response.parsed_response.to_single_hash.reject{|key, value| ["xmlns:xsi","xmlns:xsd", "xmlns"].include? key}
+      parsed_response = response.parsed_response["getTransactionDetailsResponse"]["transaction"].to_single_hash
       AuthorizeNetTransaction.new(parsed_response)
     else
       raise StandardError, response_message
@@ -22,7 +22,11 @@ class AuthorizeNetReporting < Gateway
     response = send_xml(xml)
     response_message = get_response_message(response, 'getSettledBatchListResponse')    
     if success?
-      #TODO 
+      batch_list = response.parsed_response["getSettledBatchListResponse"]["batchList"]["batch"]
+      batches =[]
+      batch_list.each do |batch|
+        batches << Batch.new(batch.to_single_hash)
+      end
     else
       raise StandardError, response_message
     end  
