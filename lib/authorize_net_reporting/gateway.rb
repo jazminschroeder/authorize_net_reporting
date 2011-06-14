@@ -3,7 +3,6 @@ require 'httparty'
 require 'date'
 class Gateway
   include HTTParty
-  include Common
   headers 'Content-Type' => 'text/xml'
   format :xml
   #debug_output $stdout
@@ -20,41 +19,12 @@ class Gateway
     end    
   end
   
-  def mode
-    @mode
+  def mode 
+    @mode 
   end
   
   def api_url
     mode.eql?('test') ? TEST_URL : LIVE_URL
   end
-  
-  #Valid Request Types
-  #getTransactionDetailsRequest
-  def build_request(request_type, options = {})
-    xml = Builder::XmlMarkup.new(:indent => 2)
-    xml.instruct!(:xml, :version => '1.0', :encoding => 'utf-8')
-    xml.tag!(request_type, :xmlns => XMLNS) do 
-      xml.tag!('merchantAuthentication') do
-        xml.tag!('name', @login)
-        xml.tag!('transactionKey', @key)
-      end
-      send("build_#{underscore(request_type)}", xml, options)
-    end  
-  end
-  
-  def build_get_transaction_details_request(xml, options)
-    xml.tag!('transId', options[:transaction_id])
-    xml.target!
-  end
-  
-  def build_get_settled_batch_list_request(xml, options)
-    xml.tag!("includeStatistics", true) if options[:include_statistics]
-    if options[:first_settlement_date] and options[:last_settlement_date]
-      xml.tag!("firstSettlementDate", Date.parse(options[:first_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
-      xml.tag!("lastSettlementDate", Date.parse(options[:last_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
-    end  
-    xml.target!
-  end
-  
 end
   

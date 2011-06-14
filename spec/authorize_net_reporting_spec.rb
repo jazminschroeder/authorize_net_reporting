@@ -53,7 +53,7 @@ describe AuthorizeNetReporting do
       end
       it "should return batches" do
         batches = subject.settled_batch_list({:first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20"})
-        raise batches.inspect      
+        batches.size.should eql(4)    
       end
 
     end
