@@ -27,6 +27,17 @@ class AuthorizeNetReporting < Gateway
     end  
   end
   
+  def batch_statistics(batch_id)
+    xml = build_request('getBatchStatisticsRequest', {:batch_id => batch_id})
+    response = send_xml(xml)
+    response_message = get_response_message(response, 'getBatchStatisticsResponse')
+    if success?
+      ::Response.parse("batch_statistics", response.parsed_response)
+    else
+      raise StandardError, response_message
+    end    
+  end
+  
   private
   def requires!(hash, *params)
     params.each do |param|
@@ -54,14 +65,18 @@ class AuthorizeNetReporting < Gateway
   end
   
   def build_get_settled_batch_list_request(xml, options)
-    xml.tag!("includeStatistics", true) #if options[:include_statistics]
+    xml.tag!("includeStatistics", true) if options[:include_statistics]
     if options[:first_settlement_date] and options[:last_settlement_date]
       xml.tag!("firstSettlementDate", Date.parse(options[:first_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
       xml.tag!("lastSettlementDate", Date.parse(options[:last_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
     end  
     xml.target!
   end
-
+  
+  def build_get_batch_statistics_request(xml, options)
+    xml.tag!("batchId", options[:batch_id])
+    xml.target!
+  end
   
   def get_response_message(response, transaction_type)
     if response.parsed_response[transaction_type] 

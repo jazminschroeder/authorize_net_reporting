@@ -14,20 +14,35 @@ module Response
       batch_list = response["getSettledBatchListResponse"]["batchList"]["batch"]
       batches = []
       batch_list.each do |batch|
-      statistics = []
-        if batch["statistics"]
-          batch_statistics = [batch["statistics"]["statistic"]].flatten
-          batch_statistics.each do |statistic|   
-            statistic = statistic.inject({}) {|h, (key,value)| h[underscore(key)] = value; h}
-            statistics << statistic 
-          end
-          batch.delete("statistics")
-        end
+        statistics = parse_batch_statistics(batch)
         params = batch.to_single_hash
         params.merge!("statistics" => statistics) unless statistics.blank?
         batches << Batch.new(params)
        end
+       batches
     end
+    
+    def batch_statistics(response)
+      batch = response["getBatchStatisticsResponse"]["batch"]
+      statistics = parse_batch_statistics(batch)
+      params = batch.to_single_hash
+      params.merge!("statistics" => statistics) unless statistics.blank?
+      batch = Batch.new(params)
+    end
+    
+    
+    def parse_batch_statistics(batch)
+      statistics = []
+      if batch["statistics"]
+        batch_statistics = [batch["statistics"]["statistic"]].flatten
+        batch_statistics.each do |statistic|   
+          statistic = statistic.inject({}) {|h, (key,value)| h[underscore(key)] = value; h}
+          statistics << statistic 
+        end
+      end
+      statistics
+    end
+    
   end
 end
 
@@ -37,7 +52,6 @@ class Hash
       case value       
         when Hash then to_single_hash(value)
         when String, Integer then   (@temp_hash||={})[key] = value          
-        else raise ArgumentError, "Error #{value}"  
       end  
     end
     @temp_hash
@@ -57,7 +71,7 @@ end
 class Batch 
   include Common
   def initialize(params)
-    params.each do |key, value|        
+      params.each do |key, value|        
       self.class.__send__(:attr_accessor, underscore(key))
       instance_variable_set("@#{underscore(key)}", value)
     end  
