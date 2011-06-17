@@ -27,18 +27,6 @@ describe AuthorizeNetReporting do
       subject.api_url.should eql(AuthorizeNetReporting::LIVE_URL)
     end
   end
-  
-  describe "transaction_details" do
-    subject { AuthorizeNetReporting.new(test_mode) } 
-    it "should return transaction if transaction_exists" do
-      transaction = subject.transaction_details(2157585857)
-      transaction.should be_an_instance_of(AuthorizeNetTransaction)
-    end
-    it "should raise StandardError 'record not found' if transaction doesn't exist" do
-      lambda { subject.transaction_details(0) }.should raise_error(StandardError)
-    end
-  end
-  
   describe "settled_batch_list" do
     subject { AuthorizeNetReporting.new(test_mode) }
     context "when there are not batches settled" do
@@ -66,4 +54,27 @@ describe AuthorizeNetReporting do
       subject.batch_statistics(1049686).statistics.should be_an_instance_of(Array)
     end
   end
+  
+  describe "transactions_list" do
+    subject {AuthorizeNetReporting.new(test_mode)}
+    it "should return all transactions in a specified batch" do
+      pending "ToDo"      
+      transactions = subject.transactions_list(1049686)
+      transactions.size.should eql(4)
+    end
+  end  
+
+  describe "transaction_details" do
+    subject { AuthorizeNetReporting.new(test_mode) } 
+    it "should return transaction if transaction_exists" do
+      transaction = subject.transaction_details(2157585857)
+      transaction.should be_an_instance_of(AuthorizeNetTransaction)
+    end
+    it "should raise StandardError 'record not found' if transaction doesn't exist" do
+      lambda { subject.transaction_details(0) }.should raise_error(StandardError)
+    end
+  end
+  
+  
+  
 end

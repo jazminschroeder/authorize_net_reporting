@@ -5,57 +5,45 @@ class AuthorizeNetReporting < Gateway
     @mode, @key, @login = options[:mode], options[:key], options[:login]
   end
   
-  def transaction_details(transaction_id)
-    xml = build_request('getTransactionDetailsRequest', {:transaction_id => transaction_id})
-    response = send_xml(xml)
-    response_message = get_response_message(response, 'getTransactionDetailsResponse')
-    if success?
-      ::Response.parse('transaction_details',response.parsed_response)  
-    else
-      raise StandardError, response_message
-    end    
-  end
-  
   def settled_batch_list(options = {})
-    xml = build_request('getSettledBatchListRequest',  options)
+    xml = build_request(__method__,  options)
     response = send_xml(xml)
-    response_message = get_response_message(response, 'getSettledBatchListResponse')    
-    if success?
-      ::Response.parse('batch_list', response.parsed_response)
-    else
-      raise StandardError, response_message
-    end  
+    handle_response(__method__, response)
   end
   
   def batch_statistics(batch_id)
-    xml = build_request('getBatchStatisticsRequest', {:batch_id => batch_id})
+    xml = build_request(__method__, {:batch_id => batch_id})
     response = send_xml(xml)
-    response_message = get_response_message(response, 'getBatchStatisticsResponse')
-    if success?
-      ::Response.parse("batch_statistics", response.parsed_response)
-    else
-      raise StandardError, response_message
-    end    
-  end
+    handle_response(__method__, response)
+  end  
   
+  def transaction_details(transaction_id)
+    xml = build_request(__method__, {:transaction_id => transaction_id})
+    response = send_xml(xml)
+    handle_response(__method__, response)
+  end
+
   private
   def requires!(hash, *params)
     params.each do |param|
       raise ArgumentError, "Missing Required Parameter #{param}" unless hash.has_key?(param) 
     end
   end
-
+  
   #Valid Request Types
   #getTransactionDetailsRequest
-  def build_request(request_type, options = {})
+  #getSettledBatchListRequest
+  #getBatchStatisticsRequest
+  def build_request(api_function, options = {})
+    api_request = "get#{camelize(api_function.to_s)}Request"
     xml = Builder::XmlMarkup.new(:indent => 2)
     xml.instruct!(:xml, :version => '1.0', :encoding => 'utf-8')
-    xml.tag!(request_type, :xmlns => XMLNS) do 
+    xml.tag!(api_request, :xmlns => XMLNS) do 
       xml.tag!('merchantAuthentication') do
         xml.tag!('name', @login)
         xml.tag!('transactionKey', @key)
       end
-      send("build_#{underscore(request_type)}", xml, options)
+      send("build_#{underscore(api_request)}", xml, options)
     end  
   end
   
@@ -78,9 +66,15 @@ class AuthorizeNetReporting < Gateway
     xml.target!
   end
   
-  def get_response_message(response, transaction_type)
-    if response.parsed_response[transaction_type] 
-      message = response.parsed_response[transaction_type]["messages"]["message"]["text"]
+  def handle_response(api_function, response) 
+    get_response_message(api_function, response)
+    success? ? ::Response.parse(api_function,response.parsed_response) : (raise StandardError, response_message)
+  end
+  
+  def get_response_message(api_function, response)
+    api_response = "get#{camelize(api_function.to_s)}Response"
+    if response.parsed_response[api_response] 
+      message = response.parsed_response[api_response]["messages"]["message"]["text"]
       @success = true if message =~ /Successful/
     else
       message = response.parsed_response["ErrorResponse"]["messages"]["message"]["text"] rescue "Unable to execute transaction"
@@ -91,6 +85,5 @@ class AuthorizeNetReporting < Gateway
   def success?
     @success == true
   end
-  
   
 end

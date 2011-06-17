@@ -1,7 +1,7 @@
 module Response
-  def self.parse(response_type, params)
+  def self.parse(api_function, params)
     parser = Parser.new
-    parser.send(response_type, params)
+    parser.send(api_function, params)
   end
   class Parser
     include Common
@@ -10,7 +10,7 @@ module Response
       AuthorizeNetTransaction.new(params)
     end
 
-    def batch_list(response)
+    def settled_batch_list(response)
       batch_list = response["getSettledBatchListResponse"]["batchList"]["batch"]
       batches = []
       batch_list.each do |batch|
@@ -30,7 +30,6 @@ module Response
       batch = Batch.new(params)
     end
     
-    
     def parse_batch_statistics(batch)
       statistics = []
       if batch["statistics"]
@@ -42,7 +41,6 @@ module Response
       end
       statistics
     end
-    
   end
 end
 
