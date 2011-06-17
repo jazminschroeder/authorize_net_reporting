@@ -58,8 +58,7 @@ describe AuthorizeNetReporting do
   describe "transactions_list" do
     subject {AuthorizeNetReporting.new(test_mode)}
     it "should return all transactions in a specified batch" do
-      pending "ToDo"      
-      transactions = subject.transactions_list(1049686)
+      transactions = subject.transaction_list(1049686)
       transactions.size.should eql(4)
     end
   end  

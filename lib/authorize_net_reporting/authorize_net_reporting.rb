@@ -6,24 +6,33 @@ class AuthorizeNetReporting < Gateway
   end
   
   def settled_batch_list(options = {})
-    xml = build_request(__method__,  options)
-    response = send_xml(xml)
-    handle_response(__method__, response)
+    process_request(__method__, options)
   end
   
   def batch_statistics(batch_id)
-    xml = build_request(__method__, {:batch_id => batch_id})
-    response = send_xml(xml)
-    handle_response(__method__, response)
+    process_request(__method__, {:batch_id => batch_id})
   end  
   
-  def transaction_details(transaction_id)
-    xml = build_request(__method__, {:transaction_id => transaction_id})
-    response = send_xml(xml)
-    handle_response(__method__, response)
+  # Returns all transactions in a specified batch
+  # @params [Integer] batch_id
+  def transaction_list(batch_id)
+    process_request(__method__, {:batch_id => batch_id})
   end
+  
+  def transaction_details(transaction_id)
+    process_request(__method__, {:transaction_id => transaction_id})
+  end  
 
   private
+  # Process request
+  # @params [Symbol] api_function requested, ':settled_batch_list', ':batch_statistics', ':transaction_details', ':transactions_list' 
+  # @params [Hash] options, options to be passed to API request, '{:batch_id => 12345}'  
+  def process_request(api_function, options = {})
+    xml = build_request(api_function, options)
+    response = send_xml(xml)
+    handle_response(api_function,response)
+  end
+
   def requires!(hash, *params)
     params.each do |param|
       raise ArgumentError, "Missing Required Parameter #{param}" unless hash.has_key?(param) 
@@ -66,8 +75,13 @@ class AuthorizeNetReporting < Gateway
     xml.target!
   end
   
+  def build_get_transaction_list_request(xml, options)
+    xml.tag!("batchId", options[:batch_id])
+    xml.target!
+  end
+
   def handle_response(api_function, response) 
-    get_response_message(api_function, response)
+    response_message = get_response_message(api_function, response)
     success? ? ::Response.parse(api_function,response.parsed_response) : (raise StandardError, response_message)
   end
   

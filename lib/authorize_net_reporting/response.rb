@@ -30,6 +30,15 @@ module Response
       batch = Batch.new(params)
     end
     
+    def transaction_list(response)
+      transactions = response["getTransactionListResponse"]["transactions"]["transaction"]
+      transaction_list = []
+      transactions.each do |transaction|
+        transaction_list << AuthorizeNetTransaction.new(transaction.to_single_hash)
+      end
+      transaction_list
+    end
+    
     def parse_batch_statistics(batch)
       statistics = []
       if batch["statistics"]
