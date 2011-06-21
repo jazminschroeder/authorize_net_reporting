@@ -5,11 +5,6 @@ module Response
   end
   class Parser
     include Common
-    def transaction_details(response)
-      params = response["getTransactionDetailsResponse"]["transaction"].to_single_hash
-      AuthorizeNetTransaction.new(params)
-    end
-
     def settled_batch_list(response)
       batch_list = response["getSettledBatchListResponse"]["batchList"]["batch"]
       batches = []
@@ -37,6 +32,21 @@ module Response
         transaction_list << AuthorizeNetTransaction.new(transaction.to_single_hash)
       end
       transaction_list
+    end
+    
+    def unsettled_transaction_list(response)
+      unsettled_transactions = response["getUnsettledTransactionListResponse"]["transactions"]["transaction"]
+      unsettled_transactions = [unsettled_transactions].flatten
+      transactions = []
+      unsettled_transactions.each do |transaction|
+        transactions << AuthorizeNetTransaction.new(transaction.to_single_hash)
+      end
+      transactions
+    end
+    
+    def transaction_details(response)
+      params = response["getTransactionDetailsResponse"]["transaction"].to_single_hash
+      AuthorizeNetTransaction.new(params)
     end
     
     def parse_batch_statistics(batch)

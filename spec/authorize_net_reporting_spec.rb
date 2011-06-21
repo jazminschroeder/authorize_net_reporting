@@ -63,6 +63,15 @@ describe AuthorizeNetReporting do
     end
   end  
 
+  describe "unsettled_transaction_list" do
+    subject { AuthorizeNetReporting.new(test_mode) }
+    it "should return unsettled transactions" do
+      transactions = subject.unsettled_transaction_list
+      transactions.should be_an_instance_of(Array)
+    end  
+  end  
+  
+  
   describe "transaction_details" do
     subject { AuthorizeNetReporting.new(test_mode) } 
     it "should return transaction if transaction_exists" do

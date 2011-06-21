@@ -19,6 +19,13 @@ class AuthorizeNetReporting < Gateway
     process_request(__method__, {:batch_id => batch_id})
   end
   
+  # Returns data for unsettled transactions. This API function return data for up to 1000 of the most recent transactions
+  def unsettled_transaction_list
+    process_request(__method__)
+  end
+  
+  # Get detailed information about one specific transaction
+  # @params [Integer] transaction_id, The transaction ID
   def transaction_details(transaction_id)
     process_request(__method__, {:transaction_id => transaction_id})
   end  
@@ -56,11 +63,6 @@ class AuthorizeNetReporting < Gateway
     end  
   end
   
-  def build_get_transaction_details_request(xml, options)
-    xml.tag!('transId', options[:transaction_id])
-    xml.target!
-  end
-  
   def build_get_settled_batch_list_request(xml, options)
     xml.tag!("includeStatistics", true) if options[:include_statistics]
     if options[:first_settlement_date] and options[:last_settlement_date]
@@ -80,6 +82,15 @@ class AuthorizeNetReporting < Gateway
     xml.target!
   end
 
+  def build_get_unsettled_transaction_list_request(xml, options)
+    xml.target!
+  end
+  
+  def build_get_transaction_details_request(xml, options)
+    xml.tag!('transId', options[:transaction_id])
+    xml.target!
+  end
+   
   def handle_response(api_function, response) 
     response_message = get_response_message(api_function, response)
     success? ? ::Response.parse(api_function,response.parsed_response) : (raise StandardError, response_message)
