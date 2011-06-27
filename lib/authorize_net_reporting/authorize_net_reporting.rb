@@ -5,10 +5,14 @@ class AuthorizeNetReporting < Gateway
     @mode, @key, @login = options[:mode], options[:key], options[:login]
   end
   
+  # Returns all settled batches within specified date range
+  # @params [Hash] options {:first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20"}
   def settled_batch_list(options = {})
     process_request(__method__, options)
   end
   
+  # Returns statistics for specify batch
+  # @params [Integer] batch_id
   def batch_statistics(batch_id)
     process_request(__method__, {:batch_id => batch_id})
   end  

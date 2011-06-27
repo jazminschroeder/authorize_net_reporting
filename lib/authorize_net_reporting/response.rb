@@ -12,7 +12,9 @@ module Response
         statistics = parse_batch_statistics(batch)
         params = batch.to_single_hash
         params.merge!("statistics" => statistics) unless statistics.blank?
-        batches << Batch.new(params)
+       batch = create_class("Batch",params)
+        raise batch.inspect
+        batches << create_class("Batch", params)
        end
        batches
     end
@@ -60,6 +62,18 @@ module Response
       end
       statistics
     end
+    
+    def create_class(class_name, hash)
+       klass = Object.const_set(class_name, Class.new) 
+       klass.class_eval do
+          attr_accessor hash.keys
+          def initialize
+           
+          end
+       end
+       klass.new
+    end
+
   end
 end
 
@@ -88,7 +102,7 @@ end
 class Batch 
   include Common
   def initialize(params)
-      params.each do |key, value|        
+    params.each do |key, value|        
       self.class.__send__(:attr_accessor, underscore(key))
       instance_variable_set("@#{underscore(key)}", value)
     end  
