@@ -10,10 +10,8 @@ module Response
       batches = []
       batch_list.each do |batch|
         statistics = parse_batch_statistics(batch)
-        params = batch.to_single_hash
+        params = to_single_hash(batch)
         params.merge!("statistics" => statistics) unless statistics.blank?
-       batch = create_class("Batch",params)
-        raise batch.inspect
         batches << create_class("Batch", params)
        end
        batches
@@ -22,33 +20,32 @@ module Response
     def batch_statistics(response)
       batch = response["getBatchStatisticsResponse"]["batch"]
       statistics = parse_batch_statistics(batch)
-      params = batch.to_single_hash
+      params = to_single_hash(batch)
       params.merge!("statistics" => statistics) unless statistics.blank?
-      batch = Batch.new(params)
+      batch = create_class("Batch", params)
     end
     
     def transaction_list(response)
-      transactions = response["getTransactionListResponse"]["transactions"]["transaction"]
+      transactions = [response["getTransactionListResponse"]["transactions"]["transaction"]].flatten
       transaction_list = []
       transactions.each do |transaction|
-        transaction_list << AuthorizeNetTransaction.new(transaction.to_single_hash)
+        transaction_list << create_class("AuthorizeNetTransaction", to_single_hash(transaction))
       end
       transaction_list
     end
     
     def unsettled_transaction_list(response)
-      unsettled_transactions = response["getUnsettledTransactionListResponse"]["transactions"]["transaction"]
-      unsettled_transactions = [unsettled_transactions].flatten
+      unsettled_transactions = [response["getUnsettledTransactionListResponse"]["transactions"]["transaction"]]
       transactions = []
       unsettled_transactions.each do |transaction|
-        transactions << AuthorizeNetTransaction.new(transaction.to_single_hash)
+        transactions << create_class("AuthorizeNetTransaction", to_single_hash(transaction))
       end
       transactions
     end
     
     def transaction_details(response)
-      params = response["getTransactionDetailsResponse"]["transaction"].to_single_hash
-      AuthorizeNetTransaction.new(params)
+      params = response["getTransactionDetailsResponse"]["transaction"]
+      create_class("AuthorizeNetTransaction", to_single_hash(params))
     end
     
     def parse_batch_statistics(batch)
@@ -63,50 +60,31 @@ module Response
       statistics
     end
     
-    def create_class(class_name, hash)
-       klass = Object.const_set(class_name, Class.new) 
-       klass.class_eval do
-          attr_accessor hash.keys
-          def initialize
-           
-          end
-       end
-       klass.new
+    def to_single_hash(hash)
+      hash.each do |key, value|
+        case value       
+          when Hash then to_single_hash(value)
+          when String, Integer then   (@temp_hash||={})[underscore(key)] = value          
+        end  
+      end
+      @temp_hash
     end
-
-  end
-end
-
-class Hash
-  def to_single_hash(hash = self)
-    hash.each do |key, value|
-      case value       
-        when Hash then to_single_hash(value)
-        when String, Integer then   (@temp_hash||={})[key] = value          
-      end  
+    
+    def create_class(class_name, params)
+      if Object.const_defined?(class_name)
+        klass = Object.const_get(class_name)
+      else  
+        klass = Object.const_set(class_name, Class.new) 
+        klass.class_eval do
+          define_method(:initialize) do |params|
+            params.each do |key, value| 
+              self.class.__send__(:attr_accessor, key)
+              instance_variable_set("@#{key}", value) 
+            end  
+          end  
+        end
+      end   
+      klass.new(params)
     end
-    @temp_hash
   end
 end
-
-class AuthorizeNetTransaction 
-  include Common
-  def initialize(params)
-    params.each do |key, value|
-      self.class.__send__(:attr_accessor, underscore(key))
-      instance_variable_set("@#{underscore(key)}", value)
-    end  
-  end
-end
-
-class Batch 
-  include Common
-  def initialize(params)
-    params.each do |key, value|        
-      self.class.__send__(:attr_accessor, underscore(key))
-      instance_variable_set("@#{underscore(key)}", value)
-    end  
-  end
-end
-
-
