@@ -6,7 +6,8 @@ module Response
   end
   class Parser
     include AuthorizeNetReporting::Common
-    def settled_batch_list(response)
+   # Parse response for settled_batch_list API call 
+   def settled_batch_list(response)
       batch_list = response["getSettledBatchListResponse"]["batchList"]["batch"]
       batches = []
       batch_list.each do |batch|
@@ -18,6 +19,7 @@ module Response
        batches
     end
     
+    # Parse response for batch_statistics API call
     def batch_statistics(response)
       batch = response["getBatchStatisticsResponse"]["batch"]
       statistics = parse_batch_statistics(batch)
@@ -26,6 +28,7 @@ module Response
       batch = create_class("Batch", params)
     end
     
+    # Parse response for transaction_list API call
     def transaction_list(response)
       transactions = [response["getTransactionListResponse"]["transactions"]["transaction"]].flatten
       transaction_list = []
@@ -35,6 +38,7 @@ module Response
       transaction_list
     end
     
+    # Parse response unsettled_transaction API call
     def unsettled_transaction_list(response)
       unsettled_transactions = [response["getUnsettledTransactionListResponse"]["transactions"]["transaction"]]
       transactions = []
@@ -44,11 +48,13 @@ module Response
       transactions
     end
     
+    # Parse response transaction_details API call
     def transaction_details(response)
       params = response["getTransactionDetailsResponse"]["transaction"]
       create_class("AuthorizeNetTransaction", to_single_hash(params))
     end
     
+    # Handle batch statistics
     def parse_batch_statistics(batch)
       statistics = []
       if batch["statistics"]
@@ -61,6 +67,8 @@ module Response
       statistics
     end
     
+    # Convert response nested hash into a single hash
+    # param[Hash] hash
     def to_single_hash(hash)
       hash.each do |key, value|
         case value       
@@ -71,6 +79,7 @@ module Response
       @temp_hash
     end
     
+    #Create objects dinamicaly 
     def create_class(class_name, params)
       if Object.const_defined?(class_name)
         klass = Object.const_get(class_name)

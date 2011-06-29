@@ -115,7 +115,8 @@ module AuthorizeNetReporting
       end    
       message
     end
-  
+    
+    # Successful Response?
     def success?
       @success == true
     end

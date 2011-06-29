@@ -3,3 +3,6 @@
 Gemfile.lock
 pkg/*
 .rvmrc
+doc/*
+.yardoc/*
+pkg/*
