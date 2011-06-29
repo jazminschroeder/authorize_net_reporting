@@ -1,5 +1,5 @@
 require 'spec_helper'
-describe AuthorizeNetReporting do
+describe AuthorizeNetReporting::Report do
   let(:test_mode) do
      #TEST API LOGIN: 3vk59E5BgM - API KEY:4c8FeAW7ebq5U733
     { :mode => "test", :login=>"3vk59E5BgM", :key => "4c8FeAW7ebq5U733" }
@@ -10,23 +10,23 @@ describe AuthorizeNetReporting do
   end  
   context "missing requirements" do
     it "should raise exception" do
-      lambda { AuthorizeNetReporting.new }.should raise_error(ArgumentError)
+      lambda { AuthorizeNetReporting::Report.new }.should raise_error(ArgumentError)
     end
   end
   describe "API URL in live mode" do
-    subject { AuthorizeNetReporting.new(live_mode) }
+    subject { AuthorizeNetReporting::Report.new(live_mode) }
     it "should be live url" do
-      subject.api_url.should eql(AuthorizeNetReporting::LIVE_URL)
+      subject.api_url.should eql(AuthorizeNetReporting::Report::LIVE_URL)
     end
   end
   
   before(:each) do
-    @authorize_net_reporting = AuthorizeNetReporting.new(test_mode)
+    @authorize_net_reporting = AuthorizeNetReporting::Report.new(test_mode)
   end  
   
   describe "API URL in test mode" do 
     it 'should be test url' do
-      @authorize_net_reporting.api_url.should eql(AuthorizeNetReporting::TEST_URL)
+      @authorize_net_reporting.api_url.should eql(AuthorizeNetReporting::Report::TEST_URL)
     end
   end
 

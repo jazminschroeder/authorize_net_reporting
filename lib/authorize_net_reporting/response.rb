@@ -1,10 +1,11 @@
+module AuthorizeNetReporting
 module Response
   def self.parse(api_function, params)
     parser = Parser.new
     parser.send(api_function, params)
   end
   class Parser
-    include Common
+    include AuthorizeNetReporting::Common
     def settled_batch_list(response)
       batch_list = response["getSettledBatchListResponse"]["batchList"]["batch"]
       batches = []
@@ -87,4 +88,5 @@ module Response
       klass.new(params)
     end
   end
+end
 end

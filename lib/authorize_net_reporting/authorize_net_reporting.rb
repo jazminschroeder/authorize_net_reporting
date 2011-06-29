@@ -1,4 +1,5 @@
-class AuthorizeNetReporting < Gateway
+module AuthorizeNetReporting
+class Report < Gateway
   include Common
   def initialize(options = {})
     requires!(options, :mode, :key, :login)
@@ -119,4 +120,5 @@ class AuthorizeNetReporting < Gateway
     @success == true
   end
   
+end
 end
