@@ -1,35 +1,30 @@
 module AuthorizeNetReporting
-module Response
-  def self.parse(api_function, params)
-    parser = Parser.new
-    parser.send(api_function, params)
-  end
-  class Parser
-    include AuthorizeNetReporting::Common
-   # Parse response for settled_batch_list API call 
-   def settled_batch_list(response)
+  # AuthorizeNetReporting::Response parses the response from Authorize.net API and turns results into objects setting attributes for easy integration
+  class Response 
+    extend Common
+    def self.parse_settled_batch_list(response)
       batch_list = response["getSettledBatchListResponse"]["batchList"]["batch"]
       batches = []
       batch_list.each do |batch|
-        statistics = parse_batch_statistics(batch)
+        statistics = extract_batch_statistics(batch)
         params = to_single_hash(batch)
         params.merge!("statistics" => statistics) unless statistics.blank?
         batches << create_class("Batch", params)
-       end
-       batches
+      end
+      batches
     end
     
     # Parse response for batch_statistics API call
-    def batch_statistics(response)
+    def self.parse_batch_statistics(response)
       batch = response["getBatchStatisticsResponse"]["batch"]
-      statistics = parse_batch_statistics(batch)
+      statistics = extract_batch_statistics(batch)
       params = to_single_hash(batch)
       params.merge!("statistics" => statistics) unless statistics.blank?
       batch = create_class("Batch", params)
     end
-    
+     
     # Parse response for transaction_list API call
-    def transaction_list(response)
+    def self.parse_transaction_list(response)
       transactions = [response["getTransactionListResponse"]["transactions"]["transaction"]].flatten
       transaction_list = []
       transactions.each do |transaction|
@@ -37,9 +32,10 @@ module Response
       end
       transaction_list
     end
-    
+
+     
     # Parse response unsettled_transaction API call
-    def unsettled_transaction_list(response)
+    def self.parse_unsettled_transaction_list(response)
       unsettled_transactions = [response["getUnsettledTransactionListResponse"]["transactions"]["transaction"]]
       transactions = []
       unsettled_transactions.each do |transaction|
@@ -48,14 +44,15 @@ module Response
       transactions
     end
     
+    
     # Parse response transaction_details API call
-    def transaction_details(response)
+    def self.parse_transaction_details(response)
       params = response["getTransactionDetailsResponse"]["transaction"]
       create_class("AuthorizeNetTransaction", to_single_hash(params))
     end
     
     # Handle batch statistics
-    def parse_batch_statistics(batch)
+    def self.extract_batch_statistics(batch)
       statistics = []
       if batch["statistics"]
         batch_statistics = [batch["statistics"]["statistic"]].flatten
@@ -64,12 +61,12 @@ module Response
           statistics << statistic 
         end
       end
-      statistics
+        statistics
     end
-    
+             
     # Convert response nested hash into a single hash
     # param[Hash] hash
-    def to_single_hash(hash)
+    def self.to_single_hash(hash)
       hash.each do |key, value|
         case value       
           when Hash then to_single_hash(value)
@@ -80,22 +77,22 @@ module Response
     end
     
     #Create objects dinamicaly 
-    def create_class(class_name, params)
-      if Object.const_defined?(class_name)
-        klass = Object.const_get(class_name)
-      else  
-        klass = Object.const_set(class_name, Class.new) 
-        klass.class_eval do
-          define_method(:initialize) do |params|
-            params.each do |key, value| 
-              self.class.__send__(:attr_accessor, key)
-              instance_variable_set("@#{key}", value) 
+    def self.create_class(class_name, params)
+        if Object.const_defined?(class_name)
+          klass = Object.const_get(class_name)
+        else  
+          klass = Object.const_set(class_name, Class.new) 
+          klass.class_eval do
+            define_method(:initialize) do |params|
+              params.each do |key, value| 
+                self.class.__send__(:attr_accessor, key)
+                instance_variable_set("@#{key}", value) 
+              end  
             end  
-          end  
-        end
-      end   
-      klass.new(params)
+          end
+        end   
+        klass.new(params)
     end
-  end
-end
-end
+  end  
+end  
+

@@ -1,4 +1,4 @@
-# Gateway to connect with AuthorizeNetReporting API
+# Gateway to connect to Authorize.net web services in order to interact with Reporting API
 require 'builder'
 require 'httparty'
 require 'date'
@@ -7,10 +7,15 @@ module AuthorizeNetReporting
     include HTTParty
     headers 'Content-Type' => 'text/xml'
     format :xml
-    #debug_output $stdout
-  
+    
+    # Authorize.net Developer TEST API 
+    # Note: Authorize.net requires the use of a developer test payment gateway account, you may have to request one from Authorize.net Developer Center
     TEST_URL = "https://apitest.authorize.net/xml/v1/request.api"
+    
+    # Authorize.net Production API
     LIVE_URL = "https://api.authorize.net/xml/v1/request.api"
+    
+    # Authorize.net XML schema
     XMLNS    = "AnetApi/xml/v1/schema/AnetApiSchema.xsd"
     
     # Make Http request

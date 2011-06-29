@@ -101,7 +101,7 @@ module AuthorizeNetReporting
     # Call to Response.parse to handle response if transaction is successful, otherwise raise StandardError  
     def handle_response(api_function, response) 
       response_message = get_response_message(api_function, response)
-      success? ? AuthorizeNetReporting::Response.parse(api_function,response.parsed_response) : (raise StandardError, response_message)
+      success? ? eval("AuthorizeNetReporting::Response.parse_#{api_function}(#{response.parsed_response})") : (raise StandardError, response_message)
     end
   
     # Extract response message from response for specified api_function
