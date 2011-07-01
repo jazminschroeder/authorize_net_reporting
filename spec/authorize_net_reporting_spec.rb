@@ -73,7 +73,7 @@ describe AuthorizeNetReporting::Report do
   describe "transaction_details" do
     it "should return transaction if transaction_exists" do
       transaction = @authorize_net_reporting.transaction_details(2157585857)
-      transaction.should be_an_instance_of(AuthorizeNetTransaction)
+      transaction.should be_an_instance_of(AuthorizeNetReporting::AuthorizeNetTransaction)
     end
     it "should raise StandardError 'record not found' if transaction doesn't exist" do
       lambda { @authorize_net_reporting.transaction_details(0) }.should raise_error(StandardError)

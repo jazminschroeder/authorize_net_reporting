@@ -1,5 +1,6 @@
 module AuthorizeNetReporting
   # AuthorizeNetReporting::Response parses the response from Authorize.net API and turns results into objects setting attributes for easy integration
+  
   class Response 
     extend Common
     def self.parse_settled_batch_list(response)
@@ -20,7 +21,7 @@ module AuthorizeNetReporting
       statistics = extract_batch_statistics(batch)
       params = to_single_hash(batch)
       params.merge!("statistics" => statistics) unless statistics.blank?
-      batch = create_class("Batch", params)
+      create_class("Batch", params)
     end
      
     # Parse response for transaction_list API call
@@ -78,10 +79,10 @@ module AuthorizeNetReporting
     
     #Create objects dinamicaly 
     def self.create_class(class_name, params)
-        if Object.const_defined?(class_name)
-          klass = Object.const_get(class_name)
+        if AuthorizeNetReporting.const_defined?(class_name)
+          klass = AuthorizeNetReporting.const_get(class_name)
         else  
-          klass = Object.const_set(class_name, Class.new) 
+          klass = AuthorizeNetReporting.const_set(class_name, Class.new) 
           klass.class_eval do
             define_method(:initialize) do |params|
               params.each do |key, value| 
