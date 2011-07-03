@@ -32,8 +32,8 @@ describe AuthorizeNetReporting::Report do
 
   describe "settled_batch_list" do
     context "when there are not batches settled" do
-      it "should raise Standard Error 'no records found'" do
-        lambda { @authorize_net_reporting.settled_batch_list }.should raise_error(StandardError)
+      it "should return an empty array" do
+        @authorize_net_reporting.settled_batch_list.should be_empty
       end
     end
     context "when there are settled batches" do
@@ -75,8 +75,8 @@ describe AuthorizeNetReporting::Report do
       transaction = @authorize_net_reporting.transaction_details(2157585857)
       transaction.should be_an_instance_of(AuthorizeNetReporting::AuthorizeNetTransaction)
     end
-    it "should raise StandardError 'record not found' if transaction doesn't exist" do
-      lambda { @authorize_net_reporting.transaction_details(0) }.should raise_error(StandardError)
+    it "should return empty array if transaction doesn't exist" do
+      lambda { @authorize_net_reporting.transaction_details(0) }.should be_empty
     end
   end
 end

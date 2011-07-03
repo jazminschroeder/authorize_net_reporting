@@ -3,6 +3,7 @@ module AuthorizeNetReporting
   
   class Response 
     extend Common
+    # Parse response for settled_batch_list 
     def self.parse_settled_batch_list(response)
       batch_list = response["getSettledBatchListResponse"]["batchList"]["batch"]
       batches = []
@@ -15,7 +16,7 @@ module AuthorizeNetReporting
       batches
     end
     
-    # Parse response for batch_statistics API call
+    # Parse response for batch_statistics
     def self.parse_batch_statistics(response)
       batch = response["getBatchStatisticsResponse"]["batch"]
       statistics = extract_batch_statistics(batch)
@@ -24,7 +25,7 @@ module AuthorizeNetReporting
       create_class("Batch", params)
     end
      
-    # Parse response for transaction_list API call
+    # Parse response for transaction_list 
     def self.parse_transaction_list(response)
       transactions = [response["getTransactionListResponse"]["transactions"]["transaction"]].flatten
       transaction_list = []
@@ -35,7 +36,7 @@ module AuthorizeNetReporting
     end
 
      
-    # Parse response unsettled_transaction API call
+    # Parse response unsettled_transaction 
     def self.parse_unsettled_transaction_list(response)
       unsettled_transactions = [response["getUnsettledTransactionListResponse"]["transactions"]["transaction"]]
       transactions = []
@@ -46,7 +47,7 @@ module AuthorizeNetReporting
     end
     
     
-    # Parse response transaction_details API call
+    # Parse response transaction_details 
     def self.parse_transaction_details(response)
       params = response["getTransactionDetailsResponse"]["transaction"]
       create_class("AuthorizeNetTransaction", to_single_hash(params))

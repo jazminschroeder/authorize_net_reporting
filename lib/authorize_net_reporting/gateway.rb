@@ -1,8 +1,8 @@
-# Gateway to connect to Authorize.net web services in order to interact with Reporting API
 require 'builder'
 require 'httparty'
 require 'date'
 module AuthorizeNetReporting
+  # Gateway to connect to Authorize.net web services in order to interact with Reporting API
   class Gateway
     include HTTParty
     headers 'Content-Type' => 'text/xml'
