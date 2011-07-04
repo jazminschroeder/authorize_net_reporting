@@ -5,7 +5,7 @@ AuthorizeNetReporting allows you to retrieve Authorize.net transaction details t
 
 # Sample Usage
 **Go to [Authorize.net](http://authorize.net) to obtain your key/login**
-````
+````ruby
 require 'rubygems'
 
 require 'authorize_net_reporting'
