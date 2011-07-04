@@ -5,14 +5,14 @@ AuthorizeNetReporting allows you to retrieve Authorize.net transaction details t
 
 # Sample Usage
 **Go to [Authorize.net](http://authorize.net) to obtain your key/login**
-
+````
 require 'rubygems'
 
 require 'authorize_net_reporting'
 
 
 $ report = AuthorizeNetReporting::Report.new({ :mode => ['test'|'live'], :key => 'your_api_key', :login => 'your_api_login' })  
-
+````
 ### All settled batched with a date range
 
 
