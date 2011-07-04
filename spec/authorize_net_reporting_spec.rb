@@ -75,8 +75,8 @@ describe AuthorizeNetReporting::Report do
       transaction = @authorize_net_reporting.transaction_details(2157585857)
       transaction.should be_an_instance_of(AuthorizeNetReporting::AuthorizeNetTransaction)
     end
-    it "should return empty array if transaction doesn't exist" do
-      lambda { @authorize_net_reporting.transaction_details(0) }.should be_empty
+    it "should return nil if transaction doesn't exist" do
+      @authorize_net_reporting.transaction_details(0).should be_nil
     end
   end
 end

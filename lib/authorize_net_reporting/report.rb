@@ -122,10 +122,10 @@ module AuthorizeNetReporting
     # Call to Response.parse to handle response if transaction is successful, otherwise raise StandardError  
     def handle_response(api_function, response) 
       response_message = get_response_message(api_function, response)
-      if success? 
+      if response_message =~ /successful/
         eval("AuthorizeNetReporting::Response.parse_#{api_function}(#{response.parsed_response})")
-      elsif no_records_found?
-        []
+      elsif response_message =~ /found/
+        ["transaction_details", "batch_statistics"].include?(api_function.to_s) ? nil : []
       else
         raise StandardError, response_message
       end
@@ -137,21 +137,11 @@ module AuthorizeNetReporting
       if response.parsed_response[api_response] 
         message = response.parsed_response[api_response]["messages"]["message"]["text"]
         @success = true if message =~ /Successful/
-        @no_records_found = true if message =~ /No records found/
+        @no_records_found = true if message =~ /found/
       else
         message = response.parsed_response["ErrorResponse"]["messages"]["message"]["text"] rescue "Unable to execute transaction"
       end    
-      message
-    end
-    
-    # Successful Response?
-    def success?
-      @success == true
-    end
-    
-    # Transaction request was successful but no recors were found
-    def no_records_found?
-      @no_records_found == true
+      message.downcase
     end
   end
 end
