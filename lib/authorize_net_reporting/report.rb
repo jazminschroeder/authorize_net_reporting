@@ -136,8 +136,6 @@ module AuthorizeNetReporting
       api_response = "get#{camelize(api_function.to_s)}Response"
       if response.parsed_response[api_response] 
         message = response.parsed_response[api_response]["messages"]["message"]["text"]
-        @success = true if message =~ /Successful/
-        @no_records_found = true if message =~ /found/
       else
         message = response.parsed_response["ErrorResponse"]["messages"]["message"]["text"] rescue "Unable to execute transaction"
       end    

@@ -1,26 +1,40 @@
 # WORK IN PROGRESS!!!! 
 # AuhtorizeNetReporting
 
-AuthorizeNetReporting allows you to retrieve transaction details through the [Transaction Details API](http://developer.authorize.net/api/transaction_details/)
+AuthorizeNetReporting allows you to retrieve Authorize.net transaction details through the [Transaction Details API](http://developer.authorize.net/api/transaction_details/)
 
-##Available Functions
-__settled_batch_list__(*API: getSettledBatchListRequest*) 
+# Sample Usage
+**Go to [Authorize.net](http://authorize.net) to obtain your key/login**
 
-This function returns information about a settled batch: Batch ID, Settlement Time, &
-Settlement State.
+require 'rubygems'
 
-__batch_statistics__(*API: getBatchStatisticsRequest*)
+require 'authorize_net_reporting'
 
-This function returns batch statistics for a single batch.
 
-__transaction_list__(*API: getTransactionListRequest*)
+$ report = AuthorizeNetReporting::Report.new({ :mode => ['test'|'live'], :key => 'your_api_key', :login => 'your_api_login' })  
 
-This function returns transaction details for a specified batch ID.
+### All settled batched with a date range
 
-__unsettled_transaction_list__(*API: getUnsettledTransactionListRequest*)
 
-This function returns details for unsettled transactions
+$ report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true })
 
-__transaction_details__(*API: getTransactionDetailsRequest*)
 
-This function returns full transaction details for a specified transaction ID.  
+###Statistics for a specific batch
+
+$ report.batch_statistics(1049686)
+
+
+###Data for all transactions in a specified batch
+
+$ report.transaction_list(1049686)
+
+
+###Unsettled Transactions
+
+$ report.unsettled_transaction_list
+
+
+###Detailed information about one specific transaction
+
+$ report.transaction_details(2157585857)
+  
