@@ -5,6 +5,7 @@ AuthorizeNetReporting allows you to retrieve Authorize.net transaction details t
 
 # Sample Usage
 **Go to [Authorize.net](http://authorize.net) to obtain your key/login**
+
 ````ruby
 require 'rubygems'
 
@@ -16,7 +17,7 @@ $ report = AuthorizeNetReporting::Report.new({ :mode => ['test'|'live'], :key =>
 ### All settled batched with a date range
 
 
-$ report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true })
+    $ report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true })
 
 
 ###Statistics for a specific batch
