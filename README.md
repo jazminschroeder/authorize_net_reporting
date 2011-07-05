@@ -20,10 +20,9 @@ AuthorizeNetReporting allows you to retrieve Authorize.net transaction details t
 **All settled batched with a date range**
 
 
-
     #It will default to the last 12 hours if no date range is provided
     report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true })
-````
+
 
 **Statistics for a specific batch**
 
@@ -41,6 +40,7 @@ AuthorizeNetReporting allows you to retrieve Authorize.net transaction details t
 
 
     report.unsettled_transaction_list
+
 
 **Detailed information about one specific transaction**
 
