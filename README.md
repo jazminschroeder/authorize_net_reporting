@@ -1,4 +1,3 @@
-# WORK IN PROGRESS!!!! 
 # AuhtorizeNetReporting
 
 AuthorizeNetReporting allows you to retrieve Authorize.net transaction details through the [Transaction Details API](http://developer.authorize.net/api/transaction_details/)
