@@ -3,7 +3,11 @@
 AuthorizeNetReporting allows you to retrieve Authorize.net transaction details through the [Transaction Details API](http://developer.authorize.net/api/transaction_details/)
 
 # Installation
-    gem install authorize_net_reporting
+    #Rails 3.x Add to your Gemfile and run bundle install
+    gem 'authorize_net_reporting'
+    
+    #Or
+    gem install 'authorize_net_reporting'
 
 # Sample Usage
 **Go to [Authorize.net](http://authorize.net) to obtain your key/login**
