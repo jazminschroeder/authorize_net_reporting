@@ -18,20 +18,20 @@ report = AuthorizeNetReporting::Report.new({ :mode => ['test'|'live'], :key => '
 
 
 ````ruby
-    #It will default to the last 12 hours if no date range is provided
-    report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true })
+#It will default to the last 12 hours if no date range is provided
+report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true })
 ````
 
 **Statistics for a specific batch**
 
 ````ruby
-    report.batch_statistics(1049686)
+report.batch_statistics(1049686)
 ````
 
 **Data for all transactions in a specified batch**
 
 ````ruby
-    report.transaction_list(1049686)
+report.transaction_list(1049686)
 ````
 
 **Unsettled Transactions**
@@ -42,15 +42,17 @@ report = AuthorizeNetReporting::Report.new({ :mode => ['test'|'live'], :key => '
 
 **Detailed information about one specific transaction**
 
-    report.transaction_details(2157585857)
+````ruby
+report.transaction_details(2157585857)
+````
   
-== LICENSE:
+# LICENSE:
 
 (The MIT License)
 
 Copyright (c) 2011:
 
-* {Jazmin Schroeder}[http://jazminschroeder.com]
+[Jazmin Schroeder](http://jazminschroeder.com)
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
