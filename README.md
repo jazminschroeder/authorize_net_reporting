@@ -9,6 +9,9 @@ AuthorizeNetReporting allows you to retrieve Authorize.net transaction details t
     #Or
     gem install 'authorize_net_reporting'
 
+# Documentation
+    Checkout the Documentation [here](http://rubydoc.info/github/jazminschroeder/authorize_net_reporting/master/frames)
+
 # Sample Usage
 **Go to [Authorize.net](http://authorize.net) to obtain your key/login**
 
