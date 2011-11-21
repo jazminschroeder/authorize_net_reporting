@@ -134,7 +134,7 @@ module AuthorizeNetReporting
     
     # @returns error message from API if request is not successful
     def error_message(api_response_message)
-      api_response_message[:messages][:message][:text]
+      api_response_message[:messages][:message][:text] rescue "Unable to process request. Try with debug = true"
     end
     
     # Parse response, convert keys to underscore symbols
