@@ -1,6 +1,6 @@
 # Authorize.Net Transaction Details  API 
 
-In order to use the Transaction Details API you mush have enabled Transaction Details API in the Merchant Interface account settings where you will find
+In order to use the Transaction Details API you must have enabled Transaction Details API in the Merchant Interface account settings where you will find
 your developer and production credentials. 
 
 For more information about the API visit [Authorize.net Reporting API](http://developer.authorize.net/api/transaction_details/).
