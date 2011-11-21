@@ -8,11 +8,10 @@ For more information about the API visit [Authorize.net Reporting API](http://de
 Note: You will be able to view test transactions at [https://sandbox.authorize.net](https://sandbox.authorize.net/).
  
 # Installation
-    #Rails 3.x Add to your Gemfile and run bundle install
+    # Gemfile
+    
     gem 'authorize_net_reporting'
     
-    #Or
-    gem install 'authorize_net_reporting'
 
 # Documentation
 [Click here to view the Documentation](http://rubydoc.info/github/jazminschroeder/authorize_net_reporting/master/frames/)
@@ -32,11 +31,11 @@ Build a new AuthorizeNetReporting::Report object for test or production mode by 
 
 **Retrieve Settled Batches within a date range**
 
-
-    #It will default to the last 12 hours if no date range is provided
+*Note: If no dates are specified, then the default is the last 24 hours.*
+   
     ~$ batches = report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20"})
     
-    #It will return an array of batches
+    # Result
     [
         [0] #<AuthorizeNetReporting::Batch:0x007fc099a08488 @batch_id="1033266", @settlement_time_utc="2011-04-21T05:17:52Z", @settlement_time_local="2011-04-21T00:17:52", @settlement_state="settledSuccessfully", @payment_method="creditCard">,
         [1] #<AuthorizeNetReporting::Batch:0x007fc099a07010 @batch_id="1039515", @settlement_time_utc="2011-04-26T05:17:34Z", @settlement_time_local="2011-04-26T00:17:34", @settlement_state="settledSuccessfully", @payment_method="creditCard">,
@@ -47,8 +46,9 @@ Build a new AuthorizeNetReporting::Report object for test or production mode by 
     
 **Include statistics for each batch**
 
-If you pass :include_statistics => true to the settled_batch_list resquest you will also receive batch statistics by payment type
-     ~$ batches = report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true})
+If you pass *:include_statistics => true* to the settled_batch_list resquest you will also receive batch statistics by payment type.
+    
+    ~$ batches = report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true})
     
     #Result
     ~ $ batches.first 
@@ -117,7 +117,6 @@ Retrieve up to 1000 of the most recent transactions
 
 **Retrieve Detailed information about one specific transaction**
 
-
     ~$ report.transaction_details(2157585857)
     
     => #<AuthorizeNetReporting::AuthorizeNetTransaction:0x007fc3c2883668 
@@ -136,13 +135,18 @@ Retrieve up to 1000 of the most recent transactions
         @tax_exempt="false", 
         @recurring_billing="false"> 
 
-** Debug **
+**Debug**
 
 To view the response from the API directly set debug to true
+    
     ~$ report.debug = true
     ~$ report.transaction_details(2157585857)
     
-  
+
+#Notes:
+
+Tested with Ruby 1.8.7 and 1.9.2
+
 # Copyright/License:
 
 (The MIT License)
