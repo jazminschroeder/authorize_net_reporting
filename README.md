@@ -1,8 +1,9 @@
-# Auhtorize.Net Reporting API 
+# Auhtorize.Net Transaction Details  API 
+
+In order to use the Transaction Details API you mush have enabled Transaction Details API in the Merchant Interface account settings where you will find
+your developer and production credentials. 
 
 For more information about the API visit [Authorize.net Reporting API](http://developer.authorize.net/api/transaction_details/).
-
-In order to use the API you will need to apply for development and production credentials. 
 
 Note: You will be able to view test transactions at [https://sandbox.authorize.net](https://sandbox.authorize.net/).
  
@@ -17,21 +18,17 @@ Note: You will be able to view test transactions at [https://sandbox.authorize.n
 [Click here to view the Documentation](http://rubydoc.info/github/jazminschroeder/authorize_net_reporting/master/frames/)
 
 # Usage example
-**Create an AuthorizeNetReporting::Report object with your key/login**
 
+Build a new AuthorizeNetReporting::Report object for test or production mode by passing your credentials as follows:
 
     ~$ require 'rubygems'
-
     ~$ require 'authorize_net_reporting'
-
-    ~$ report = AuthorizeNetReporting::Report.new({ :mode => 'test', :key => 'your_developer_api_key', :login => 'your_developer_api_login' })  
+    ~$ report = AuthorizeNetReporting::Report.new({ :mode => 'test', :key => 'your_developer_api_key', :login => 'your_developer_api_login' })   
+    => #<AuthorizeNetReporting::Report:0x007fd94b2dd7b0 @mode="test", @key="XXXXXXX", @login="XXXXX"> 
     
-    => #<AuthorizeNetReporting::Report:0x007fd94b2dd7b0 @mode="test", @key="9Z6H2PybfGEp884J", @login="3vk59E5BgM"> 
-    
-    In production mode set :mode to 'production' and pass your production key and login
-    
-    report = AuthorizeNetReporting::Report.new({ :mode => 'production', :key => 'your_production_api_key', :login => 'your_production_api_login' })  
-    
+    # In Production Mode
+    ~$ report = AuthorizeNetReporting::Report.new({ :mode => 'production', :key => 'your_production_api_key', :login => 'your_production_api_login' })  
+    => #<AuthorizeNetReporting::Report:0x007fd94b2dd7b0 @mode="production", @key="XXXXXXX", @login="XXXXX"> 
 
 **Retrieve Settled Batches within a date range**
 
@@ -48,7 +45,7 @@ Note: You will be able to view test transactions at [https://sandbox.authorize.n
     ]
 
     
-**Include statistics for each batch **
+**Include statistics for each batch**
 
 If you pass :include_statistics => true to the settled_batch_list resquest you will also receive batch statistics by payment type
      ~$ batches = report.settled_batch_list({ :first_settlement_date => "2011/04/20", :last_settlement_date => "2011/05/20", :include_statistics => true})
