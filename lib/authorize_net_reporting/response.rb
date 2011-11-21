@@ -58,20 +58,20 @@ module AuthorizeNetReporting
     
     # Convert response nested hash into a single hash
     # param[Hash] hash
-    def self.to_single_hash(hash, first_iteration = true)
-      temp_hash = {}  if first_iteration == true
+    def self.to_single_hash(hash, first_iteration = nil)
+      @temp_hash = {}  if first_iteration == true
       hash.each do |key, value|
         case value       
           when Hash then to_single_hash(value)
-          when String, Integer, Array then temp_hash[key] = value          
+          when String, Integer, Array then @temp_hash[key] = value          
         end  
       end
-      temp_hash
+      @temp_hash
     end
     
     #Create objects dinamically 
     def self.create_class(class_name, params)
-      params = to_single_hash(params)
+      params = to_single_hash(params, true)
       if AuthorizeNetReporting.const_defined?(class_name)
         klass = AuthorizeNetReporting.const_get(class_name)
       else  
