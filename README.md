@@ -37,11 +37,8 @@ Build a new AuthorizeNetReporting::Report object for test or production mode by 
     
     # Result
     [
-        [0] #<AuthorizeNetReporting::Batch:0x007fc099a08488 @batch_id="1033266", @settlement_time_utc="2011-04-21T05:17:52Z", @settlement_time_local="2011-04-21T00:17:52", @settlement_state="settledSuccessfully", @payment_method="creditCard">,
-        [1] #<AuthorizeNetReporting::Batch:0x007fc099a07010 @batch_id="1039515", @settlement_time_utc="2011-04-26T05:17:34Z", @settlement_time_local="2011-04-26T00:17:34", @settlement_state="settledSuccessfully", @payment_method="creditCard">,
-        [2] #<AuthorizeNetReporting::Batch:0x007fc099a061d8 @batch_id="1049686", @settlement_time_utc="2011-05-03T05:13:09Z", @settlement_time_local="2011-05-03T00:13:09", @settlement_state="settledSuccessfully", @payment_method="creditCard">,
-        [3] #<AuthorizeNetReporting::Batch:0x007fc099a05210 @batch_id="1075905", @settlement_time_utc="2011-05-20T05:13:57Z", @settlement_time_local="2011-05-20T00:13:57", @settlement_state="settledSuccessfully", @payment_method="creditCard">
-    ]
+		    [0] #<AuthorizeNetReporting::Batch:0x007ffbf3a03150 @batch_id="1364896", @settlement_time_utc="2011-11-19T06:21:10Z", @settlement_time_local="2011-11-19T00:21:10", @settlement_state="settledSuccessfully", @payment_method="creditCard">
+		]
 
     
 **Include statistics for each batch**
@@ -103,7 +100,7 @@ If you pass *:include_statistics => true* to the settled_batch_list resquest you
     
     [
       [1] #<AuthorizeNetReporting::AuthorizeNetTransaction:0x007fc3c392f8e0 @trans_id="2159639081", @submit_time_utc="2011-05-02T18:11:50Z", @submit_time_local="2011-05-02T13:11:50", @transaction_status="settledSuccessfully", @first_name="Max", @last_name="Schroeder", @account_type="Visa", @account_number="XXXX8888", @settle_amount="299.84">,
-      [2] #<AuthorizeNetReporting::AuthorizeNetTransaction:0x007fc3c392bf10 @trans_id="2159639020", @submit_time_utc="2011-05-02T18:08:10Z", @submit_time_local="2011-05-02T13:08:10", @transaction_status="settledSuccessfully", @first_name="American", @last_name="Express", @account_type="AmericanExpress", @account_number="XXXX0002", @settle_amount="1.00">
+      [2] #<AuthorizeNetReporting::AuthorizeNetTransaction:0x007fc3c392bf10 @trans_id="2159639020", @submit_time_utc="2011-05-02T18:08:10Z", @submit_time_local="2011-05-02T13:08:10", @transaction_status="settledSuccessfully", @first_name="John", @last_name="Smith", @account_type="AmericanExpress", @account_number="XXXX0002", @settle_amount="1.00">
     ]
 
 **Retrieve Transaction Details for Unsettled Transactions**
