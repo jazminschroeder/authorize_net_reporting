@@ -1,4 +1,4 @@
-# Auhtorize.Net Transaction Details  API 
+# Authorize.Net Transaction Details  API 
 
 In order to use the Transaction Details API you mush have enabled Transaction Details API in the Merchant Interface account settings where you will find
 your developer and production credentials. 
