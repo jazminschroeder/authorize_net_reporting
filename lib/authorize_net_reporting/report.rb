@@ -1,10 +1,12 @@
 # AuthorizeNetReporting::Report
 module AuthorizeNetReporting
+  #Handeling Errors
+  class Error < StandardError; end
   # Initialize AuthorizeNetReporting::Report class
   #
   # report = AuthorizeNetReporting::Report.new({ :mode => ['test'|'live'], :key => 'your api key', :login => 'your api_login' })  
   class Report < Gateway
-    include Common
+    attr_accessor :debug
     # Set API login, password and mode(live/test)
     #
     # AuthorizeNetReporting::Report.new({ :mode => ['test'|'live'], :key => 'your api key', :login => 'your api_login' })    
@@ -62,8 +64,14 @@ module AuthorizeNetReporting
     # @param [Hash] options, options to be passed to API request, '{:batch_id => 12345}'  
     def process_request(api_function, options = {})
       xml = build_request(api_function, options)
-      response = send_xml(xml)
-      handle_response(api_function,response)
+      api_response = send_xml(xml)
+      puts api_response if @debug 
+      response = parse_response(api_response)
+      if success?(response["get_#{api_function.to_s}_response".to_sym])
+        AuthorizeNetReporting::Response.send("parse_#{api_function}", response)
+      else
+        raise AuthorizeNetReporting::Error, error_message(response["get_#{api_function.to_s}_response".to_sym])
+      end  
     end
   
     # Validates that required parameters are present
@@ -71,7 +79,7 @@ module AuthorizeNetReporting
     # @param [Symbol] params required :mode, :key
     def requires!(hash, *params)
       params.each do |param|
-        raise ArgumentError, "Missing Required Parameter #{param}" unless hash.has_key?(param) 
+        raise AuthorizeNetReporting::Error, "Missing Required Parameter #{param}" unless hash.has_key?(param) 
       end
     end
   
@@ -87,14 +95,14 @@ module AuthorizeNetReporting
           xml.tag!('name', @login)
           xml.tag!('transactionKey', @key)
         end
-        send("build_#{underscore(api_request)}", xml, options)
+        send("build_#{underscorize(api_request)}", xml, options)
       end  
     end
   
     def build_get_settled_batch_list_request(xml, options) #:nodoc:
       xml.tag!("includeStatistics", true) if options[:include_statistics]
       if options[:first_settlement_date] and options[:last_settlement_date]
-        xml.tag!("firstSettlementDate", Date.parse(options[:first_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
+        xml.tag!("firstSettlementDate", Date.parse(options[:first_settlement_date]).strftime("%Y-%m-%dT00:00:00Z")) 
         xml.tag!("lastSettlementDate", Date.parse(options[:last_settlement_date]).strftime("%Y-%m-%dT00:00:00Z"))
       end  
       xml.target!
@@ -119,27 +127,41 @@ module AuthorizeNetReporting
       xml.target!
     end
   
-    # Call to Response.parse to handle response if transaction is successful, otherwise raise StandardError  
-    def handle_response(api_function, response) 
-      response_message = get_response_message(api_function, response)
-      if response_message =~ /successful/
-        eval("AuthorizeNetReporting::Response.parse_#{api_function}(#{response.parsed_response})")
-      elsif response_message =~ /found/
-        ["transaction_details", "batch_statistics"].include?(api_function.to_s) ? nil : []
+    # Extract response message from response for specified api_function
+    def success?(api_response_message)
+      !api_response_message.nil? and (!api_response_message[:messages][:result_code].match(/ok/i).nil? or api_response_message[:messages][:message][:text].match(/cannot be found/i))
+    end
+    
+    # @returns error message from API if request is not successful
+    def error_message(api_response_message)
+      api_response_message[:messages][:message][:text]
+    end
+    
+    # Parse response, convert keys to underscore symbols
+    def parse_response(response)
+      response = sanitize_response_keys(response.parsed_response)
+    end
+
+    # Recursively sanitizes the response object by clenaing up any hash keys.
+    def sanitize_response_keys(response)
+      if response.is_a?(Hash)
+        response.inject({}) { |result, (key, value)| result[underscorize(key).to_sym] = sanitize_response_keys(value); result } 
+      elsif response.is_a?(Array)
+        response.collect { |result| sanitize_response_keys(result) }
       else
-        raise StandardError, response_message
+        response
       end
     end
-  
-    # Extract response message from response for specified api_function
-    def get_response_message(api_function, response)
-      api_response = "get#{camelize(api_function.to_s)}Response"
-      if response.parsed_response[api_response] 
-        message = response.parsed_response[api_response]["messages"]["message"]["text"]
-      else
-        message = response.parsed_response["ErrorResponse"]["messages"]["message"]["text"] rescue "Unable to execute transaction"
-      end    
-      message.downcase
+    
+    #helper method
+    def underscorize(key) #:nodoc:
+      key.to_s.sub(/^(v[0-9]+|ns):/, "").gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase
     end
+    
+    #helper method
+    def camelize(str)
+      str.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+    end
+    
   end
 end

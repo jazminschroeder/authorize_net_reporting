@@ -1,3 +1,3 @@
 module AuthorizeNetReporting
-  VERSION = "0.0.1" #:nodoc:
+  VERSION = "1.0.0" #:nodoc:
 end

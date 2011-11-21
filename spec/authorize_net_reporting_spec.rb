@@ -1,16 +1,15 @@
 require 'spec_helper'
 describe AuthorizeNetReporting::Report do
   let(:test_mode) do
-     #TEST API LOGIN: 3vk59E5BgM - API KEY:4c8FeAW7ebq5U733
-    { :mode => "test", :login=>"3vk59E5BgM", :key => "4c8FeAW7ebq5U733" }
+    { :mode => "test", :login=>"xxxx", :key => "xxxx" }
   end
   
   let(:live_mode) do
-    { :mode => "live", :key=>"key", :login => "login" }
+    { :mode => "live", :key=>"xxxxx", :login => "xxxxx" }
   end  
   context "missing requirements" do
     it "should raise exception" do
-      lambda { AuthorizeNetReporting::Report.new }.should raise_error(ArgumentError)
+      lambda { AuthorizeNetReporting::Report.new }.should raise_error(AuthorizeNetReporting::Error)
     end
   end
   describe "API URL in live mode" do
@@ -33,7 +32,7 @@ describe AuthorizeNetReporting::Report do
   describe "settled_batch_list" do
     context "when there are not batches settled" do
       it "should return an empty array" do
-        @authorize_net_reporting.settled_batch_list.should be_empty
+        @authorize_net_reporting.settled_batch_list({:first_settlement_date => "2011/11/16", :last_settlement_date => "2011/11/16"}).should be_empty
       end
     end
     context "when there are settled batches" do
@@ -54,29 +53,36 @@ describe AuthorizeNetReporting::Report do
     it "should return an array statistics for given batch" do
       @authorize_net_reporting.batch_statistics(1049686).statistics.should be_an_instance_of(Array)
     end
+    it "should return nil if batch is not found" do 
+      @authorize_net_reporting.batch_statistics(11111).should eql(nil)
+    end  
   end
-  
+    
   describe "transactions_list" do
+    it "should return empty array if no transactions are found" do 
+      transactions = @authorize_net_reporting.transaction_list(10000)
+      transactions.should be_empty
+    end  
     it "should return all transactions in a specified batch" do
       transactions = @authorize_net_reporting.transaction_list(1049686)
       transactions.size.should eql(4)
     end
   end  
-
+  
   describe "unsettled_transaction_list" do
     it "should return unsettled transactions" do
       transactions = @authorize_net_reporting.unsettled_transaction_list
       transactions.should be_an_instance_of(Array)
     end  
   end  
-  
+
   describe "transaction_details" do
     it "should return transaction if transaction_exists" do
       transaction = @authorize_net_reporting.transaction_details(2157585857)
       transaction.should be_an_instance_of(AuthorizeNetReporting::AuthorizeNetTransaction)
     end
     it "should return nil if transaction doesn't exist" do
-      @authorize_net_reporting.transaction_details(0).should be_nil
+       @authorize_net_reporting.transaction_details(0).should be_nil
     end
   end
 end
