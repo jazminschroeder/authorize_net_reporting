@@ -14,7 +14,7 @@ Note: You will be able to view test transactions at [https://sandbox.authorize.n
     
 
 # Documentation
-[Click here to view the Documentation](http://rubydoc.info/github/jazminschroeder/authorize_net_reporting/master/frames/)
+[Click here to view the Documentation](http://rubydoc.info/github/jazminschroeder/authorize_net_reporting/85e82b/frames)
 
 # Usage example
 
